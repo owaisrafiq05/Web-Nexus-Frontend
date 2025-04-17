@@ -3,6 +3,8 @@ import Navbar from "../components/GlobalComponents/Navbar";
 import localFont from "next/font/local";
 import Footer from "@/components/GlobalComponents/Footer";
 import StickyIcon from "@/components/GlobalComponents/StickyIcon";
+import { analytics } from "@/utils/firebase";
+import Script from 'next/script';
 // Import the complete Gilroy font family
 // const gilroy = localFont({
 //   src: [
@@ -99,6 +101,26 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=G-SNYCKHF2SX`}
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-SNYCKHF2SX', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
+      </head>
       <body className={`font-gilroy antialiased`}>
         <Navbar />
         {children}
