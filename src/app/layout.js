@@ -2,6 +2,7 @@ import "./globals.css";
 import Navbar from "../components/GlobalComponents/Navbar";
 import localFont from "next/font/local";
 import Footer from "@/components/GlobalComponents/Footer";
+import StickyIcon from "@/components/GlobalComponents/StickyIcon";
 // Import the complete Gilroy font family
 // const gilroy = localFont({
 //   src: [
@@ -101,6 +102,7 @@ export default function RootLayout({ children }) {
       <body className={`font-gilroy antialiased`}>
         <Navbar />
         {children}
+        <StickyIcon/>
         <Footer/>
       </body>
     </html>
