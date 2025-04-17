@@ -193,7 +193,7 @@ const TestimonialsSection = () => {
       <section className="py-20 px-4 md:px-8 lg:px-16 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-6 mb-12 whitespace-nowrap">
-            <h2 className="text-lg font-normal text-[#2A2A2A]">Who We Are</h2>
+            <h2 className="text-lg font-normal text-[#2A2A2A]">Testimonials</h2>
             <div className="h-[1px] bg-[#333333]/20 w-full"></div>
           </div>
           <div className="flex justify-center items-center h-64">

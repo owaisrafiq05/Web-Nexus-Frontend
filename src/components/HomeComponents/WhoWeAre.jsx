@@ -81,12 +81,10 @@ const WhoWeAre = () => {
 
       <div className="max-w-7xl mx-auto relative">
         {/* Header with line */}
-        <div className="flex items-center gap-6 mb-16">
-          <h2 className="text-[#2A2A2A] text-2xl font-medium tracking-wider">
-            Who We Are
-          </h2>
-          <div className="h-[2px] bg-gradient-to-r from-[#333333] to-transparent w-full opacity-30"></div>
-        </div>
+        <div className="flex items-center gap-6 mb-12 whitespace-nowrap">
+            <h2 className="text-lg font-normal text-[#2A2A2A]">Who We Are</h2>
+            <div className="h-[1px] bg-[#333333]/20 w-full"></div>
+          </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left content */}
@@ -129,7 +127,7 @@ const WhoWeAre = () => {
           <div className="relative h-[500px] rounded-2xl overflow-hidden shadow-xl">
             <div className="absolute inset-0 bg-gradient-to-br from-[#FFE5B4] to-[#FFD700] opacity-20"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-[#5A5A5A] text-lg">[Your Business Image Here]</span>
+              <img src="/people.jpg" alt="Web Nexus" className="h-full w-full object-cover" />
             </div>
           </div>
         </div>
