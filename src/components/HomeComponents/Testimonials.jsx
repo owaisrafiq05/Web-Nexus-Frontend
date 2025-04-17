@@ -1,54 +1,21 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Star } from "lucide-react"
 import { Splide, SplideSlide } from "@splidejs/react-splide"
 import "@splidejs/react-splide/css"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { fetchTestimonials } from "../../utils/contentful"
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
 }
 
-const testimonials = [
-  {
-    id: 1,
-    name: "Alice Johnson",
-    image: "/personimg.png",
-    rating: 4,
-    quality: "Great Service",
-    text: "Working with this team has been a game changer for our business. Their attention to detail and commitment to excellence is unmatched. Highly recommend!",
-    dark: true,
-  },
-  {
-    id: 2,
-    name: "Bob Smith, CEO of Tech Innovations",
-    image: "/personimg.png",
-    rating: 5,
-    quality: "Outstanding Experience",
-    text: "The expertise and support provided by this company have significantly improved our operational efficiency. Their solutions are innovative and effective.",
-  },
-  {
-    id: 3,
-    name: "Charlie Brown, Marketing Director",
-    image: "/personimg.png",
-    rating: 5,
-    quality: "Exceptional Quality",
-    text: "I was impressed by their ability to understand our needs and deliver results that exceeded our expectations. A fantastic partner for any project.",
-  },
-  {
-    id: 4,
-    name: "Diana Prince, Founder of Creative Agency",
-    image: "/personimg.png",
-    rating: 5,
-    quality: "Top-notch Support",
-    text: "Their team is incredibly responsive and knowledgeable. They helped us navigate through challenges with ease and provided valuable insights.",
-  },
-]
-
 const TestimonialsSection = () => {
+  const [testimonials, setTestimonials] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const splideRef = useRef(null)
 
   // Refs for animation targets
@@ -59,6 +26,43 @@ const TestimonialsSection = () => {
   const subtitleRef = useRef(null)
   const navButtonsRef = useRef(null)
   const slideRefs = useRef([])
+
+  // Fetch testimonials from Contentful
+  useEffect(() => {
+    const getTestimonials = async () => {
+      try {
+        setIsLoading(true)
+        const data = await fetchTestimonials()
+        setTestimonials(data)
+      } catch (error) {
+        console.error("Error fetching testimonials:", error)
+        // Fallback to default testimonials in case of error
+        setTestimonials([
+          {
+            id: 1,
+            name: "Alice Johnson",
+            image: "/personimg.png",
+            rating: 4,
+            quality: "Great Service",
+            text: "Working with this team has been a game changer for our business. Their attention to detail and commitment to excellence is unmatched. Highly recommend!",
+            dark: true,
+          },
+          {
+            id: 2,
+            name: "Bob Smith, CEO of Tech Innovations",
+            image: "/personimg.png",
+            rating: 5,
+            quality: "Outstanding Experience",
+            text: "The expertise and support provided by this company have significantly improved our operational efficiency. Their solutions are innovative and effective.",
+          },
+        ])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    getTestimonials()
+  }, [])
 
   const splideOptions = {
     type: "slide",
@@ -86,8 +90,8 @@ const TestimonialsSection = () => {
 
   // Main animations
   useEffect(() => {
-    // Only run on client side
-    if (typeof window === "undefined") return
+    // Only run on client side and when testimonials are loaded
+    if (typeof window === "undefined" || isLoading || testimonials.length === 0) return
 
     // Create main timeline
     const tl = gsap.timeline({
@@ -182,7 +186,23 @@ const TestimonialsSection = () => {
         splideRef.current.splide.off("moved")
       }
     }
-  }, [])
+  }, [testimonials, isLoading])
+
+  if (isLoading) {
+    return (
+      <section className="py-20 px-4 md:px-8 lg:px-16 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-6 mb-12 whitespace-nowrap">
+            <h2 className="text-lg font-normal text-[#2A2A2A]">Who We Are</h2>
+            <div className="h-[1px] bg-[#333333]/20 w-full"></div>
+          </div>
+          <div className="flex justify-center items-center h-64">
+            <p className="text-xl text-gray-400">Loading testimonials...</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section ref={sectionRef} className="py-20 px-4 md:px-8 lg:px-16 bg-white">
@@ -239,48 +259,54 @@ const TestimonialsSection = () => {
         </div>
 
         {/* Testimonials Carousel */}
-        <Splide ref={splideRef} options={splideOptions}>
-          {testimonials.map((testimonial, index) => (
-            <SplideSlide key={testimonial.id}>
-              <div
-                ref={(el) => (slideRefs.current[index] = el)}
-                className={`p-6 md:p-8 relative overflow-hidden h-full ${
-                  testimonial.dark ? "bg-[#333333] text-white" : "bg-[#F5F0E8] text-[#333333]"
-                }`}
-              >
-                {/* Profile and Rating */}
-                <div className="flex items-start gap-4 mb-6">
-                  <img
-                    src={testimonial.image || "/placeholder.svg"}
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                  <div>
-                    <h3 className="text-xl font-medium mb-1">{testimonial.name}</h3>
-                    <div className="flex items-center gap-2">
-                      <span>{testimonial.quality}</span>
-                      <div className="flex gap-1">
-                        {[...Array(testimonial.rating)].map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        ))}
+        {testimonials.length > 0 ? (
+          <Splide ref={splideRef} options={splideOptions}>
+            {testimonials.map((testimonial, index) => (
+              <SplideSlide key={testimonial.id}>
+                <div
+                  ref={(el) => (slideRefs.current[index] = el)}
+                  className={`p-6 md:p-8 relative overflow-hidden h-full ${
+                    testimonial.dark ? "bg-[#333333] text-white" : "bg-[#F5F0E8] text-[#333333]"
+                  }`}
+                >
+                  {/* Profile and Rating */}
+                  <div className="flex items-start gap-4 mb-6">
+                    <img
+                      src={testimonial.image || "/placeholder.svg"}
+                      alt={testimonial.name}
+                      className="w-16 h-16 rounded-full object-cover"
+                    />
+                    <div>
+                      <h3 className="text-xl font-medium mb-1">{testimonial.name}</h3>
+                      <div className="flex items-center gap-2">
+                        <span>{testimonial.quality}</span>
+                        <div className="flex gap-1">
+                          {[...Array(testimonial.rating)].map((_, i) => (
+                            <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Testimonial Text */}
+                  <p className="text-lg leading-relaxed mb-12 break-words">{testimonial.text}</p>
+
+                  {/* Diagonal cut */}
+                  <div
+                    className={`absolute bottom-0 right-0 w-16 h-16 transform rotate-45 translate-x-8 translate-y-8 ${
+                      testimonial.dark ? "bg-white" : "bg-white"
+                    }`}
+                  ></div>
                 </div>
-
-                {/* Testimonial Text */}
-                <p className="text-lg leading-relaxed mb-12 break-words">{testimonial.text}</p>
-
-                {/* Diagonal cut */}
-                <div
-                  className={`absolute bottom-0 right-0 w-16 h-16 transform rotate-45 translate-x-8 translate-y-8 ${
-                    testimonial.dark ? "bg-white" : "bg-white"
-                  }`}
-                ></div>
-              </div>
-            </SplideSlide>
-          ))}
-        </Splide>
+              </SplideSlide>
+            ))}
+          </Splide>
+        ) : (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-xl text-gray-400">No testimonials available</p>
+          </div>
+        )}
       </div>
     </section>
   )
